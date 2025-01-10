@@ -10,92 +10,111 @@
             margin: 0;
             padding: 0;
             line-height: 1.6;
+            background-color: #f4f4f4;
         }
         header {
-            background: #0044cc;
-            color: white;
-            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
         }
         header h1 {
             margin: 0;
         }
-        nav {
-            margin-top: 10px;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-right: 15px;
-        }
         .container {
+            max-width: 800px;
+            margin: 20px auto;
             padding: 20px;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        .cta {
-            background: #f4f4f4;
-            padding: 15px;
-            text-align: center;
-            margin-top: 20px;
+        .form-group {
+            margin-bottom: 15px;
         }
-        footer {
-            background: #222;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .btn {
+            display: inline-block;
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background: #555;
+        }
+        .message {
             margin-top: 20px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <header>
         <h1>Ignite Student Convention</h1>
-        <nav>
-            <a href="#home">Home</a>
-            <a href="#about">About</a>
-            <a href="#register">Register</a>
-            <a href="#schedule">Schedule</a>
-            <a href="#contact">Contact Us</a>
-        </nav>
     </header>
-
     <div class="container">
-        <section id="home">
-            <h2>Welcome to the Ignite Student Convention</h2>
-            <p>An annual gathering for Christian schools featuring competitions, worship services, and much more!</p>
-        </section>
-
-        <section id="about">
-            <h2>About the Convention</h2>
-            <p>Ignite Student Convention is a unique opportunity for students to showcase their talents, grow spiritually, and connect with peers from other schools.</p>
-        </section>
-
-        <section id="register">
-            <h2>School & Student Registration</h2>
-            <p>Register your school and students to participate in a variety of events. Check out the rules and guidelines for registration.</p>
-            <a href="#" class="cta">Register Now</a>
-        </section>
-
-        <section id="schedule">
-            <h2>Event Schedule</h2>
-            <p>View the full schedule of events, including competition times, worship services, and award ceremonies.</p>
-        </section>
-
-        <section id="contact">
-            <h2>Contact Us</h2>
-            <p>If you have any questions, feel free to reach out to us via email or phone.</p>
-            <form>
-                <label for="name">Name:</label><br>
-                <input type="text" id="name" name="name" required><br><br>
-                <label for="email">Email:</label><br>
-                <input type="email" id="email" name="email" required><br><br>
-                <label for="message">Message:</label><br>
-                <textarea id="message" name="message" rows="5" required></textarea><br><br>
-                <button type="submit">Send Message</button>
-            </form>
-        </section>
+        <h2>Register a School</h2>
+        <div class="form-group">
+            <label for="schoolName">School Name</label>
+            <input type="text" id="schoolName" placeholder="Enter school name">
+        </div>
+        <div class="form-group">
+            <label for="schoolAddress">School Address</label>
+            <input type="text" id="schoolAddress" placeholder="Enter school address">
+        </div>
+        <button id="registerSchool" class="btn">Register School</button>
+        <p id="message" class="message"></p>
     </div>
+    <script>
+        document.getElementById('registerSchool').addEventListener('click', function() {
+            const schoolName = document.getElementById('schoolName').value;
+            const schoolAddress = document.getElementById('schoolAddress').value;
 
-    <footer>
-        <p>&copy; 2025 Ignite Student Convention. All rights reserved.</p>
-    </footer>
+            if (!schoolName || !schoolAddress) {
+                document.getElementById('message').textContent = 'Please fill out all fields.';
+                document.getElementById('message').style.color = 'red';
+                return;
+            }
+
+            fetch('https://ignitebackend-47b4.onrender.com/add_school', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: schoolName,
+                    address: schoolAddress
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    document.getElementById('message').textContent = data.message;
+                    document.getElementById('message').style.color = 'green';
+                } else {
+                    document.getElementById('message').textContent = 'An error occurred.';
+                    document.getElementById('message').style.color = 'red';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('message').textContent = 'Failed to connect to the server.';
+                document.getElementById('message').style.color = 'red';
+            });
+        });
+    </script>
 </body>
 </html>
